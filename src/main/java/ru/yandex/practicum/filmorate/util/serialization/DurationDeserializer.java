@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.util.serialization;
 
 // region imports
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -18,7 +17,7 @@ import java.time.Duration;
 @Slf4j
 public class DurationDeserializer extends JsonDeserializer<Duration> {
     @Override
-    public Duration deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
+    public Duration deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         String durationString = jsonParser.getText();
         if (durationString == null || durationString.isBlank()) {
             return null;
