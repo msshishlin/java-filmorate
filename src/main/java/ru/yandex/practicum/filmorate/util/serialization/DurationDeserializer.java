@@ -26,7 +26,7 @@ public class DurationDeserializer extends JsonDeserializer<Duration> {
         int durationNumber;
         try {
             durationNumber = Integer.parseInt(durationString);
-        } catch(NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             log.error(ex.getLocalizedMessage());
             return null;
         }
