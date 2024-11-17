@@ -73,7 +73,7 @@ public final class UserController {
         }
 
         if (this.users.values().stream().anyMatch(u -> !Objects.equals(u.getId(), newUser.getId()) && Objects.equals(u.getEmail(), newUser.getEmail()))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Новый e-mail пользователя уже используется");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Новый e-mail пользователя уже используется");
         }
 
         if (!this.users.containsKey(newUser.getId())) {

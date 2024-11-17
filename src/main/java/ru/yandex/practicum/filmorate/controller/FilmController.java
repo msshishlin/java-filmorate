@@ -86,7 +86,7 @@ public class FilmController {
         }
 
         if (!this.films.containsKey(newFilm.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Фильм с идентификатором %d не найден", newFilm.getId()));
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Фильм с идентификатором %d не найден", newFilm.getId()));
         }
 
         log.debug("Updating film {}", newFilm);
