@@ -3,17 +3,15 @@ package ru.yandex.practicum.filmorate.controller;
 // region imports
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.MissedEntityIdException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 // endregion
 
@@ -22,42 +20,34 @@ import java.util.Map;
  */
 @RequestMapping("/films")
 @RestController
-@Slf4j
 public class FilmController {
     /**
-     * Список фильмов.
+     * Сервис для работы с фильмами.
      */
-    private final Map<Long, Film> films;
+    private final FilmService filmService;
 
     /**
      * Конструктор.
      */
-    public FilmController() {
-        this.films = new HashMap<>();
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
     }
 
     /**
      * Создать фильм.
      *
-     * @param film фильм.
+     * @param film   фильм.
+     * @param result результат привязки тела запроса к полям модели.
      * @return созданный фильм.
      */
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        try {
-            this.validateBeforeCreate(film);
-        } catch (ValidationException ex) {
-            log.error(ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage());
+    @ResponseStatus(HttpStatus.CREATED)
+    public Film create(@RequestBody @Valid Film film, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ValidationException(result.getAllErrors());
         }
 
-        log.debug("Creating film {}", film);
-
-        film.setId(this.getNextId());
-        log.trace("Calculated film id: {}", film.getId());
-
-        this.films.put(film.getId(), film);
-        return film;
+        return this.filmService.create(film);
     }
 
     /**
@@ -67,80 +57,26 @@ public class FilmController {
      */
     @GetMapping
     public Collection<Film> getAll() {
-        return films.values();
+        return this.filmService.getAll();
     }
 
     /**
      * Обновить фильм.
      *
-     * @param newFilm фильм с измененными значениями полей.
+     * @param film   фильм.
+     * @param result результат привязки тела запроса к полям модели.
      * @return обновленный фильм.
      */
     @PutMapping
-    public Film update(@RequestBody Film newFilm) {
-        try {
-            this.validateBeforeUpdate(newFilm);
-        } catch (ValidationException ex) {
-            log.error(ex.getMessage());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage());
+    public Film update(@RequestBody @Valid Film film, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ValidationException(result.getAllErrors());
         }
 
-        if (!this.films.containsKey(newFilm.getId())) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("Фильм с идентификатором %d не найден", newFilm.getId()));
-        }
-
-        log.debug("Updating film {}", newFilm);
-
-        Film oldFilm = this.films.get(newFilm.getId());
-        oldFilm.setName(newFilm.getName());
-        oldFilm.setDescription(newFilm.getDescription());
-        oldFilm.setReleaseDate(newFilm.getReleaseDate());
-        oldFilm.setDuration(newFilm.getDuration());
-
-        log.debug("Updated film {}", oldFilm);
-        return oldFilm;
-    }
-
-    // region Facilities
-
-    /**
-     * Валидация фильма перед его созданием.
-     *
-     * @param film фильм.
-     */
-    private void validateBeforeCreate(Film film) {
-        if (film.getReleaseDate() != null && film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
-        }
-
-        if (film.getDuration() != null && !film.getDuration().isPositive()) {
-            throw new ValidationException("Продолжительность фильма должна быть положительным числом");
-        }
-    }
-
-    /**
-     * Валидация фильма перед его обновлением.
-     *
-     * @param film фильм.
-     */
-    private void validateBeforeUpdate(Film film) {
         if (film.getId() == null) {
-            throw new ValidationException("Не задан идентификатор фильма");
+            throw new MissedEntityIdException("Не задан идентификатор фильма");
         }
 
-        this.validateBeforeCreate(film);
+        return this.filmService.update(film);
     }
-
-    // вспомогательный метод для генерации идентификатора нового поста
-    private long getNextId() {
-        long currentMaxId = this.films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-
-        return ++currentMaxId;
-    }
-
-    // endregion
 }

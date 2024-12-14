@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.validation.film.constraint.DurationConstraint;
+import ru.yandex.practicum.filmorate.validation.film.constraint.ReleaseDateConstraint;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -39,10 +41,12 @@ public class Film {
     /**
      * Дата релиза.
      */
+    @ReleaseDateConstraint
     private LocalDate releaseDate;
 
     /**
      * Продолжительность фильма.
      */
+    @DurationConstraint
     private Duration duration;
 }

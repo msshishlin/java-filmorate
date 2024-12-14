@@ -4,15 +4,14 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import ru.yandex.practicum.filmorate.exception.MissedEntityIdException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 // endregion
 
@@ -24,36 +23,31 @@ import java.util.Objects;
 @Slf4j
 public final class UserController {
     /**
-     * Список пользователей.
+     * Сервис для работы с пользователями.
      */
-    private final Map<Long, User> users;
+    private final UserService userService;
 
     /**
      * Конструктор.
      */
-    public UserController() {
-        this.users = new HashMap<>();
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     /**
      * Создать пользователя.
      *
-     * @param user пользователь.
+     * @param user   пользователь.
+     * @param result результат привязки тела запроса к полям модели.
      * @return созданный пользователь.
      */
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
-        log.debug("Creating user {}", user);
-
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
+    public User create(@Valid @RequestBody User user, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ValidationException(result.getAllErrors());
         }
 
-        user.setId(this.getNextId());
-        log.trace("Calculated user id: {}", user.getId());
-
-        this.users.put(user.getId(), user);
-        return user;
+        return this.userService.create(user);
     }
 
     /**
@@ -63,51 +57,26 @@ public final class UserController {
      */
     @GetMapping
     public Collection<User> getAll() {
-        return this.users.values();
+        return this.userService.getAll();
     }
 
+    /**
+     * Обновить пользователя.
+     *
+     * @param user   пользователя.
+     * @param result результат привязки тела запроса к полям модели.
+     * @return обновленный пользователь.
+     */
     @PutMapping
-    public User update(@Valid @RequestBody User newUser) {
-        if (newUser.getId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Не задан идентификатор пользователя");
+    public User update(@Valid @RequestBody User user, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ValidationException(result.getAllErrors());
         }
 
-        if (this.users.values().stream().anyMatch(u -> !Objects.equals(u.getId(), newUser.getId()) && Objects.equals(u.getEmail(), newUser.getEmail()))) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Новый e-mail пользователя уже используется");
+        if (user.getId() == null) {
+            throw new MissedEntityIdException("Не задан идентификатор пользователя");
         }
 
-        if (!this.users.containsKey(newUser.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Пользователь с идентификатором %d не найден", newUser.getId()));
-        }
-
-        log.debug("Updating user {}", newUser);
-
-        User oldUser = this.users.get(newUser.getId());
-        oldUser.setEmail(newUser.getEmail());
-        oldUser.setLogin(newUser.getLogin());
-
-        if (newUser.getName() != null) {
-            oldUser.setName(newUser.getName());
-        }
-
-        oldUser.setBirthday(newUser.getBirthday());
-
-        log.debug("Updated user {}", oldUser);
-        return oldUser;
+        return this.userService.update(user);
     }
-
-    // region Facilities
-
-    // вспомогательный метод для генерации идентификатора нового поста
-    private long getNextId() {
-        long currentMaxId = this.users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-
-        return ++currentMaxId;
-    }
-
-    // endregion
 }
