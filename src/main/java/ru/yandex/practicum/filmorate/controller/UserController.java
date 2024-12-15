@@ -79,4 +79,49 @@ public final class UserController {
 
         return this.userService.update(user);
     }
+
+    /**
+     * Добавить в друзья.
+     *
+     * @param userId   идентификатор пользователя.
+     * @param friendId идентификатор друга.
+     */
+    @PutMapping("/{userId}/friends/{friendId}")
+    public User addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        return this.userService.addFriend(userId, friendId);
+    }
+
+    /**
+     * Получить друзей пользователя.
+     *
+     * @param userId идентификатор пользователя.
+     * @return список друзей пользователя.
+     */
+    @GetMapping("/{userId}/friends")
+    public Collection<User> getFriends(@PathVariable Long userId) {
+        return this.userService.getFriends(userId);
+    }
+
+    /**
+     * Получить общих друзей двух пользователей.
+     *
+     * @param userId      идентификатор пользователя.
+     * @param otherUserId идентификатор другого пользователя.
+     * @return список общих друзей двух пользователей.
+     */
+    @GetMapping("/{userId}/friends/common/{otherUserId}")
+    public Collection<User> getFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
+        return this.userService.getCommonFriends(userId, otherUserId);
+    }
+
+    /**
+     * Удалить из друзей.
+     *
+     * @param userId   идентификатор пользователя.
+     * @param friendId идентификатор друга.
+     */
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public User removeFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        return this.userService.removeFriend(userId, friendId);
+    }
 }

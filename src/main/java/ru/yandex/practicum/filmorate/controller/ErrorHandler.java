@@ -42,4 +42,10 @@ public class ErrorHandler {
     public Map<String, String> handeUpdateEntityException(final UpdateEntityException ex) {
         return Map.of("error", ex.getReason());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> handleError(final Throwable ex) {
+        return Map.of("error", ex.getMessage());
+    }
 }

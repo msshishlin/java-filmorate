@@ -63,6 +63,49 @@ public class UserService {
         return this.userStorage.update(user);
     }
 
+    /**
+     * Добавить в друзья.
+     *
+     * @param userId   идентификатор пользователя.
+     * @param friendId идентификатор друга.
+     * @return пользователь.
+     */
+    public User addFriend(Long userId, Long friendId) {
+        return this.userStorage.addFriend(userId, friendId);
+    }
+
+    /**
+     * Получить друзей пользователя.
+     *
+     * @param userId идентификатор пользователя.
+     * @return список друзей пользователя.
+     */
+    public Collection<User> getFriends(Long userId) {
+        return this.userStorage.getFriends(userId);
+    }
+
+    /**
+     * Получить общих друзей двух пользователей.
+     *
+     * @param userId      идентификатор пользователя.
+     * @param otherUserId идентификатор другого пользователя.
+     * @return список общих друзей двух пользователей.
+     */
+    public Collection<User> getCommonFriends(Long userId, Long otherUserId) {
+        return this.userStorage.getCommonFriends(userId, otherUserId);
+    }
+
+    /**
+     * Удалить из друзей.
+     *
+     * @param userId   идентификатор пользователя.
+     * @param friendId идентификатор друга.
+     * @return пользователь.
+     */
+    public User removeFriend(Long userId, Long friendId) {
+        return this.userStorage.removeFriend(userId, friendId);
+    }
+
     // region Facilities
 
     /**

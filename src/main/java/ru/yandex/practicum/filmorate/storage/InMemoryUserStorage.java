@@ -8,10 +8,8 @@ import ru.yandex.practicum.filmorate.exception.UpdateEntityException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.abstractions.UserStorage;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // endregion
 
@@ -74,5 +72,100 @@ public class InMemoryUserStorage implements UserStorage {
         oldUser.setName(user.getName());
 
         return oldUser;
+    }
+
+    /**
+     * Добавить в друзья.
+     *
+     * @param userId   идентификатор пользователя.
+     * @param friendId идентификатор друга.
+     * @return пользователь.
+     */
+    public User addFriend(Long userId, Long friendId) {
+        User user = this.users.get(userId);
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь с идентификатором %d не найден", userId));
+        }
+
+        User friend = this.users.get(friendId);
+        if (friend == null) {
+            throw new NotFoundException(String.format("Пользователь с идентификатором %d не найден", friendId));
+        }
+
+        user.getFriends().add(friendId);
+        friend.getFriends().add(userId);
+
+        return user;
+    }
+
+    /**
+     * Получить друзей пользователя.
+     *
+     * @param userId идентификатор пользователя.
+     * @return список друзей пользователя.
+     */
+    public Collection<User> getFriends(Long userId) {
+        User user = this.users.get(userId);
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь с идентификатором %d не найден", userId));
+        }
+
+        Set<Long> friends = user.getFriends();
+
+        return this.users.values()
+                .stream()
+                .filter(u -> friends.contains(u.getId()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Получить общих друзей двух пользователей.
+     *
+     * @param userId      идентификатор пользователя.
+     * @param otherUserId идентификатор другого пользователя.
+     * @return список общих друзей двух пользователей.
+     */
+    public Collection<User> getCommonFriends(Long userId, Long otherUserId) {
+        User user = this.users.get(userId);
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь с идентификатором %d не найден", userId));
+        }
+
+        User otherUser = this.users.get(otherUserId);
+        if (otherUser == null) {
+            throw new NotFoundException(String.format("Пользователь с идентификатором %d не найден", otherUserId));
+        }
+
+        Set<Long> userFriends = user.getFriends();
+        Set<Long> otherUserFriend = otherUser.getFriends();
+
+        return this.users.values()
+                .stream()
+                .filter(u -> userFriends.contains(u.getId()) && otherUserFriend.contains(u.getId()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Удалить из друзей.
+     *
+     * @param userId   идентификатор пользователя.
+     * @param friendId идентификатор друга.
+     * @return пользователь.
+     */
+    public User removeFriend(Long userId, Long friendId) {
+        User user = this.users.get(userId);
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь с идентификатором %d не найден", userId));
+        }
+
+        User friend = this.users.get(friendId);
+        if (friend == null) {
+            throw new NotFoundException(String.format("Пользователь с идентификатором %d не найден", friendId));
+        }
+
+        user.getFriends().remove(friendId);
+        friend.getFriends().remove(userId);
+
+        return user;
     }
 }
