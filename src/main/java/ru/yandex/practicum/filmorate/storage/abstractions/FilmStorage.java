@@ -34,4 +34,30 @@ public interface FilmStorage {
      * @return обновленный фильм.
      */
     Film update(Film film);
+
+    /**
+     * Поставить фильму пользовательский лайк.
+     *
+     * @param filmId идентификатор фильма.
+     * @param userId идентификатор пользователя.
+     * @return фильм.
+     */
+    Film addLike(Long filmId, Long userId);
+
+    /**
+     * Удалить у фильма пользовательский лайк.
+     *
+     * @param filmId идентификатор фильма.
+     * @param userId идентификатор пользователя.
+     * @return фильм.
+     */
+    Film removeLike(Long filmId, Long userId);
+
+    /**
+     * Получить {@code count} популярных фильмов.
+     *
+     * @param count количество фильмов.
+     * @return {@code count} популярных фильмов.
+     */
+    Collection<Film> getPopularFilms(Long count);
 }

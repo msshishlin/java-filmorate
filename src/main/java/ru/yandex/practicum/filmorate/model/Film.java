@@ -4,20 +4,20 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validation.film.constraint.DurationConstraint;
 import ru.yandex.practicum.filmorate.validation.film.constraint.ReleaseDateConstraint;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 // endregion
 
 /**
  * Фильм.
  */
-@AllArgsConstructor
 @Data
 public class Film {
     /**
@@ -49,4 +49,9 @@ public class Film {
      */
     @DurationConstraint
     private Duration duration;
+
+    /**
+     * Пользовательские лайки.
+     */
+    private Set<Long> usersLikes = new HashSet<>();
 }

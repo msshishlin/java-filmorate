@@ -79,4 +79,39 @@ public class FilmController {
 
         return this.filmService.update(film);
     }
+
+    /**
+     * Поставить фильму пользовательский лайк.
+     *
+     * @param filmId идентификатор фильма.
+     * @param userId идентификатор пользователя.
+     * @return фильм.
+     */
+    @PutMapping("/{filmId}/like/{userId}")
+    public Film addLike(@PathVariable Long filmId, @PathVariable Long userId) {
+        return this.filmService.addLike(filmId, userId);
+    }
+
+    /**
+     * Удалить у фильма пользовательский лайк.
+     *
+     * @param filmId идентификатор фильма.
+     * @param userId идентификатор пользователя.
+     * @return фильм.
+     */
+    @DeleteMapping("/{filmId}/like/{userId}")
+    public Film removeLike(@PathVariable Long filmId, @PathVariable Long userId) {
+        return this.filmService.removeLike(filmId, userId);
+    }
+
+    /**
+     * Получить {@code count} популярных фильмов.
+     *
+     * @param count количество фильмов.
+     * @return {@code count} популярных фильмов.
+     */
+    @GetMapping("/popular")
+    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10") Long count) {
+        return this.filmService.getPopularFilms(count);
+    }
 }

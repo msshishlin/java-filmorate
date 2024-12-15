@@ -5,6 +5,7 @@ package ru.yandex.practicum.filmorate.storage.abstractions;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
+import java.util.Optional;
 
 // endregion
 
@@ -26,6 +27,14 @@ public interface UserStorage {
      * @return список всех пользователей.
      */
     Collection<User> getAll();
+
+    /**
+     * Найти пользователя по его идентификатору.
+     *
+     * @param userId идентификатор пользователя.
+     * @return пользователь.
+     */
+    Optional<User> findById(Long userId);
 
     /**
      * Обновить пользователя.

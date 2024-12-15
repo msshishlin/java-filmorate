@@ -51,6 +51,16 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     /**
+     * Найти пользователя по его идентификатору.
+     *
+     * @param userId идентификатор пользователя.
+     * @return пользователь.
+     */
+    public Optional<User> findById(Long userId) {
+        return Optional.ofNullable(this.users.get(userId));
+    }
+
+    /**
      * Обновить пользователя.
      *
      * @param user пользователь.
@@ -142,7 +152,7 @@ public class InMemoryUserStorage implements UserStorage {
         return this.users.values()
                 .stream()
                 .filter(u -> userFriends.contains(u.getId()) && otherUserFriend.contains(u.getId()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
