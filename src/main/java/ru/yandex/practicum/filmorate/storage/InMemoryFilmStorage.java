@@ -36,6 +36,7 @@ public class InMemoryFilmStorage implements FilmStorage {
      * @param film фильм.
      * @return созданный фильм.
      */
+    @Override
     public Film create(Film film) {
         this.films.put(film.getId(), film);
         return film;
@@ -46,6 +47,7 @@ public class InMemoryFilmStorage implements FilmStorage {
      *
      * @return список всех фильмов.
      */
+    @Override
     public Collection<Film> getAll() {
         return this.films.values();
     }
@@ -56,6 +58,7 @@ public class InMemoryFilmStorage implements FilmStorage {
      * @param film фильм.
      * @return обновленный фильм.
      */
+    @Override
     public Film update(Film film) {
         Film oldFilm = this.films.get(film.getId());
         if (oldFilm == null) {
@@ -77,6 +80,7 @@ public class InMemoryFilmStorage implements FilmStorage {
      * @param userId идентификатор пользователя.
      * @return фильм.
      */
+    @Override
     public Film addLike(Long filmId, Long userId) {
         Film film = this.films.get(filmId);
         if (film == null) {
@@ -94,6 +98,7 @@ public class InMemoryFilmStorage implements FilmStorage {
      * @param userId идентификатор пользователя.
      * @return фильм.
      */
+    @Override
     public Film removeLike(Long filmId, Long userId) {
         Film film = this.films.get(filmId);
         if (film == null) {
@@ -110,6 +115,7 @@ public class InMemoryFilmStorage implements FilmStorage {
      * @param count количество фильмов.
      * @return {@code count} популярных фильмов.
      */
+    @Override
     public Collection<Film> getPopularFilms(Long count) {
         return this.films.values()
                 .stream()

@@ -36,6 +36,7 @@ public class InMemoryUserStorage implements UserStorage {
      * @param user пользователь.
      * @return созданный пользователь.
      */
+    @Override
     public User create(User user) {
         this.users.put(user.getId(), user);
         return user;
@@ -46,6 +47,7 @@ public class InMemoryUserStorage implements UserStorage {
      *
      * @return список всех пользователей.
      */
+    @Override
     public Collection<User> getAll() {
         return this.users.values();
     }
@@ -56,6 +58,7 @@ public class InMemoryUserStorage implements UserStorage {
      * @param userId идентификатор пользователя.
      * @return пользователь.
      */
+    @Override
     public Optional<User> findById(Long userId) {
         return Optional.ofNullable(this.users.get(userId));
     }
@@ -66,6 +69,7 @@ public class InMemoryUserStorage implements UserStorage {
      * @param user пользователь.
      * @return обновленный пользователь.
      */
+    @Override
     public User update(User user) {
         User oldUser = this.users.get(user.getId());
         if (oldUser == null) {
@@ -91,6 +95,7 @@ public class InMemoryUserStorage implements UserStorage {
      * @param friendId идентификатор друга.
      * @return пользователь.
      */
+    @Override
     public User addFriend(Long userId, Long friendId) {
         User user = this.users.get(userId);
         if (user == null) {
@@ -114,6 +119,7 @@ public class InMemoryUserStorage implements UserStorage {
      * @param userId идентификатор пользователя.
      * @return список друзей пользователя.
      */
+    @Override
     public Collection<User> getFriends(Long userId) {
         User user = this.users.get(userId);
         if (user == null) {
@@ -135,6 +141,7 @@ public class InMemoryUserStorage implements UserStorage {
      * @param otherUserId идентификатор другого пользователя.
      * @return список общих друзей двух пользователей.
      */
+    @Override
     public Collection<User> getCommonFriends(Long userId, Long otherUserId) {
         User user = this.users.get(userId);
         if (user == null) {
@@ -162,6 +169,7 @@ public class InMemoryUserStorage implements UserStorage {
      * @param friendId идентификатор друга.
      * @return пользователь.
      */
+    @Override
     public User removeFriend(Long userId, Long friendId) {
         User user = this.users.get(userId);
         if (user == null) {
