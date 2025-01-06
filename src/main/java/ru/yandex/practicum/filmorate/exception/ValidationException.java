@@ -1,15 +1,23 @@
 package ru.yandex.practicum.filmorate.exception;
 
+// region imports
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.ObjectError;
+
+import java.util.Collection;
+
+// endregion
+
 /**
  * Исключение, выбрасываемое, в случае, если не была пройдена валидация.
  */
+@Getter
+@RequiredArgsConstructor
 public class ValidationException extends RuntimeException {
     /**
-     * Конструктор.
-     *
-     * @param message сообщение об ошибке.
+     * Коллекция ошибок валидации.
      */
-    public ValidationException(String message) {
-        super(message);
-    }
+    private final Collection<ObjectError> errors;
 }

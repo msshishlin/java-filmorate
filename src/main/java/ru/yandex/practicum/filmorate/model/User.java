@@ -6,6 +6,8 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 // endregion
 
@@ -43,4 +45,9 @@ public class User {
      */
     @PastOrPresent(message = "Дата рождения пользователя не может быть больше текущей даты")
     private LocalDate birthday;
+
+    /**
+     * Список друзей.
+     */
+    private Set<Long> friends = new HashSet<>();
 }
