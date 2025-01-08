@@ -1,7 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-// region imports
-
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,8 +12,6 @@ import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
-
-// endregion
 
 /**
  * Контроллер, обрабатывающий запросы пользователей.

@@ -32,7 +32,7 @@ public final class FilmMapper {
         dto.setReleaseDate(film.getReleaseDate());
         dto.setDuration(film.getDuration());
         dto.setMpa(MotionPictureAssociationMapper.mapToMpaDto(film.getMpa()));
-        dto.setGenres(Set.copyOf(GenreMapper.mapToGenreDtoCollection(film.getGenres())));
+        dto.setGenres(GenreMapper.mapToGenreDtoCollection(film.getGenres()));
 
         return dto;
     }

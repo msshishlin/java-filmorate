@@ -73,7 +73,7 @@ public class FilmService {
 
             return genre.get();
         }).toList();
-        film.setGenres(Set.copyOf(genres));
+        film.setGenres(genres);
 
         return this.filmStorage.create(film);
     }
@@ -93,11 +93,7 @@ public class FilmService {
             }
 
             f.setMpa(mpa.get());
-
-            List<Genre> genres = new ArrayList<>(this.genreStorage.getGenresByFilmId(f.getId()));
-            genres.sort(Comparator.comparing(Genre::getId));
-
-            f.setGenres(Set.copyOf(genres));
+            f.setGenres(this.genreStorage.getGenresByFilmId(f.getId()));
         });
 
         return films;
@@ -123,11 +119,7 @@ public class FilmService {
         }
 
         film.setMpa(mpa.get());
-
-        List<Genre> genres = new ArrayList<>(this.genreStorage.getGenresByFilmId(filmId));
-        genres.sort(Comparator.comparing(Genre::getId));
-
-        film.setGenres(Set.copyOf(genres));
+        film.setGenres(this.genreStorage.getGenresByFilmId(filmId));
 
         return film;
     }
@@ -153,7 +145,7 @@ public class FilmService {
 
             return genre.get();
         }).toList();
-        film.setGenres(Set.copyOf(genres));
+        film.setGenres(genres);
 
         return this.filmStorage.update(film);
     }
@@ -204,7 +196,7 @@ public class FilmService {
             }
 
             f.setMpa(mpa.get());
-            f.setGenres(Set.copyOf(this.genreStorage.getGenresByFilmId(f.getId())));
+            f.setGenres(this.genreStorage.getGenresByFilmId(f.getId()));
         });
 
         return films;

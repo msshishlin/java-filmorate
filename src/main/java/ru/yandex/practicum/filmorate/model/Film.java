@@ -4,8 +4,8 @@ import lombok.Data;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Фильм.
@@ -45,10 +45,10 @@ public class Film {
     /**
      * Жанры, к которым относится фильм.
      */
-    private Set<Genre> genres = new HashSet<>();
+    private Collection<Genre> genres = new HashSet<>();
 
     /**
      * Пользовательские лайки.
      */
-    private Set<Long> usersLikes = new HashSet<>();
+    private Collection<Long> usersLikes = new HashSet<>();
 }

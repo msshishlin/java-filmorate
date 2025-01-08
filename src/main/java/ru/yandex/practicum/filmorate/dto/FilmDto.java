@@ -10,8 +10,8 @@ import ru.yandex.practicum.filmorate.validation.film.constraint.ReleaseDateConst
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Трансферный объект для сущности "Фильм".
@@ -58,5 +58,5 @@ public final class FilmDto {
      * Жанры, к которым относится фильм.
      */
     @GenreDtoCollectionConstraint
-    private Set<GenreDto> genres = new HashSet<>();
+    private Collection<GenreDto> genres = new HashSet<>();
 }

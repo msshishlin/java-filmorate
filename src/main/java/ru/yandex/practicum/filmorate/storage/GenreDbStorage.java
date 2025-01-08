@@ -32,7 +32,7 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
     /**
      * SQL-запрос для получения жанров фильма.
      */
-    private static final String GET_GENRES_BY_FILM_ID_QUERY = "SELECT g.* FROM genres g JOIN film_genres fg ON fg.genre_id = g.id WHERE fg.film_id = ?";
+    private static final String GET_GENRES_BY_FILM_ID_QUERY = "SELECT g.* FROM genres g JOIN film_genres fg ON fg.genre_id = g.id WHERE fg.film_id = ? ORDER BY g.id";
 
     /**
      * Конструктор.
