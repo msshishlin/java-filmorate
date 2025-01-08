@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.abstractions.FilmStorage;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 // endregion
 
@@ -38,6 +39,8 @@ public class InMemoryFilmStorage implements FilmStorage {
      */
     @Override
     public Film create(Film film) {
+        film.setId(this.getNextId());
+
         this.films.put(film.getId(), film);
         return film;
     }
@@ -50,6 +53,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Collection<Film> getAll() {
         return this.films.values();
+    }
+
+    /**
+     * Получить фильм по его идентификатору.
+     *
+     * @param filmId идентификатор фильма.
+     * @return фильм.
+     */
+    @Override
+    public Optional<Film> getFilmById(long filmId) {
+        return Optional.ofNullable(this.films.get(filmId));
     }
 
     /**
@@ -78,17 +92,15 @@ public class InMemoryFilmStorage implements FilmStorage {
      *
      * @param filmId идентификатор фильма.
      * @param userId идентификатор пользователя.
-     * @return фильм.
      */
     @Override
-    public Film addLike(Long filmId, Long userId) {
+    public void addLike(Long filmId, Long userId) {
         Film film = this.films.get(filmId);
         if (film == null) {
             throw new NotFoundException(String.format("Фильм с идентификатором %d не найден", filmId));
         }
 
         film.getUsersLikes().add(userId);
-        return film;
     }
 
     /**
@@ -96,17 +108,15 @@ public class InMemoryFilmStorage implements FilmStorage {
      *
      * @param filmId идентификатор фильма.
      * @param userId идентификатор пользователя.
-     * @return фильм.
      */
     @Override
-    public Film removeLike(Long filmId, Long userId) {
+    public void removeLike(Long filmId, Long userId) {
         Film film = this.films.get(filmId);
         if (film == null) {
             throw new NotFoundException(String.format("Фильм с идентификатором %d не найден", filmId));
         }
 
         film.getUsersLikes().remove(userId);
-        return film;
     }
 
     /**
@@ -123,4 +133,23 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .limit(count)
                 .toList();
     }
+
+    // region Facilities
+
+    /**
+     * Получить идентификатор для создания нового фильма.
+     *
+     * @return идентификатор для создания нового фильма.
+     */
+    private long getNextId() {
+        long currentMaxId = this.films.values()
+                .stream()
+                .mapToLong(Film::getId)
+                .max()
+                .orElse(0);
+
+        return ++currentMaxId;
+    }
+
+    // endregion
 }

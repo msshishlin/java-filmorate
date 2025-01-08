@@ -4,11 +4,13 @@ package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.UserDto;
 import ru.yandex.practicum.filmorate.exception.MissedEntityIdException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
@@ -37,17 +39,17 @@ public final class UserController {
     /**
      * Создать пользователя.
      *
-     * @param user   пользователь.
-     * @param result результат привязки тела запроса к полям модели.
+     * @param userDto трансферный объект для сущности "Пользователь".
+     * @param result  результат привязки тела запроса к полям модели.
      * @return созданный пользователь.
      */
     @PostMapping
-    public User create(@Valid @RequestBody User user, BindingResult result) {
+    public UserDto create(@Valid @RequestBody UserDto userDto, BindingResult result) {
         if (result.hasErrors()) {
             throw new ValidationException(result.getAllErrors());
         }
 
-        return this.userService.create(user);
+        return UserMapper.mapToUserDto(this.userService.create(UserMapper.mapToUser(userDto)));
     }
 
     /**
@@ -56,28 +58,28 @@ public final class UserController {
      * @return коллекция пользователей.
      */
     @GetMapping
-    public Collection<User> getAll() {
-        return this.userService.getAll();
+    public Collection<UserDto> getAll() {
+        return UserMapper.mapToUserCollectionDto(this.userService.getAll());
     }
 
     /**
      * Обновить пользователя.
      *
-     * @param user   пользователя.
-     * @param result результат привязки тела запроса к полям модели.
+     * @param userDto трансферный объект для сущности "Пользователь".
+     * @param result  результат привязки тела запроса к полям модели.
      * @return обновленный пользователь.
      */
     @PutMapping
-    public User update(@Valid @RequestBody User user, BindingResult result) {
+    public UserDto update(@Valid @RequestBody UserDto userDto, BindingResult result) {
         if (result.hasErrors()) {
             throw new ValidationException(result.getAllErrors());
         }
 
-        if (user.getId() == null) {
+        if (userDto.getId() == null) {
             throw new MissedEntityIdException("Не задан идентификатор пользователя");
         }
 
-        return this.userService.update(user);
+        return UserMapper.mapToUserDto(this.userService.update(UserMapper.mapToUser(userDto)));
     }
 
     /**
@@ -87,8 +89,9 @@ public final class UserController {
      * @param friendId идентификатор друга.
      */
     @PutMapping("/{userId}/friends/{friendId}")
-    public User addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
-        return this.userService.addFriend(userId, friendId);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        this.userService.addFriend(userId, friendId);
     }
 
     /**
@@ -98,8 +101,8 @@ public final class UserController {
      * @return список друзей пользователя.
      */
     @GetMapping("/{userId}/friends")
-    public Collection<User> getFriends(@PathVariable Long userId) {
-        return this.userService.getFriends(userId);
+    public Collection<UserDto> getFriends(@PathVariable Long userId) {
+        return UserMapper.mapToUserCollectionDto(this.userService.getFriends(userId));
     }
 
     /**
@@ -110,8 +113,8 @@ public final class UserController {
      * @return список общих друзей двух пользователей.
      */
     @GetMapping("/{userId}/friends/common/{otherUserId}")
-    public Collection<User> getFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
-        return this.userService.getCommonFriends(userId, otherUserId);
+    public Collection<UserDto> getFriends(@PathVariable Long userId, @PathVariable Long otherUserId) {
+        return UserMapper.mapToUserCollectionDto(this.userService.getCommonFriends(userId, otherUserId));
     }
 
     /**
@@ -121,7 +124,8 @@ public final class UserController {
      * @param friendId идентификатор друга.
      */
     @DeleteMapping("/{userId}/friends/{friendId}")
-    public User removeFriend(@PathVariable Long userId, @PathVariable Long friendId) {
-        return this.userService.removeFriend(userId, friendId);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeFriend(@PathVariable Long userId, @PathVariable Long friendId) {
+        this.userService.removeFriend(userId, friendId);
     }
 }

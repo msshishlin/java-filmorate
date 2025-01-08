@@ -49,9 +49,8 @@ public interface UserStorage {
      *
      * @param userId   идентификатор пользователя.
      * @param friendId идентификатор друга.
-     * @return пользователь.
      */
-    User addFriend(Long userId, Long friendId);
+    void addFriend(Long userId, Long friendId);
 
     /**
      * Получить друзей пользователя.
@@ -75,7 +74,6 @@ public interface UserStorage {
      *
      * @param userId   идентификатор пользователя.
      * @param friendId идентификатор друга.
-     * @return пользователь.
      */
-    User removeFriend(Long userId, Long friendId);
+    void removeFriend(Long userId, Long friendId);
 }

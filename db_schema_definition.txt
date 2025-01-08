@@ -1,0 +1,75 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table users {
+  id integer [primary key]
+  login varchar
+  email varchar
+  name varchar
+  birthday date
+
+  indexes {
+    (email) [unique]
+  }
+}
+
+Table friends {
+  id integer [primary key]
+  left_user_id integer
+  right_user_id integer
+  confirmed bool
+
+  indexes {
+    (left_user_id, right_user_id) [unique]
+  }
+}
+
+Table genres {
+  id integer [primary key]
+  name varchar
+}
+
+Table mpa {
+  id integer [primary key]
+  name varchar
+}
+
+Table films {
+  id integer [primary key]
+  name varchar
+  description varchar(200)
+  release_date date
+  duration time
+  mpa_id integer
+}
+
+Table film_genres {
+  id integer [primary key]
+  film_id integer
+  genre_id integer
+
+  indexes {
+    (film_id, genre_id) [unique]
+  }
+}
+
+Table film_likes {
+  id integer [primary key]
+  film_id integer
+  user_id integer
+
+  indexes {
+    (film_id, user_id) [unique]
+  }
+}
+
+Ref: friends.left_user_id > users.id
+Ref: friends.right_user_id > users.id
+
+Ref: films.mpa_id > mpa.id
+
+Ref: film_genres.film_id > films.id
+Ref: film_genres.genre_id > genres.id
+
+Ref: film_likes.film_id > films.id
+Ref: film_likes.user_id > users.id

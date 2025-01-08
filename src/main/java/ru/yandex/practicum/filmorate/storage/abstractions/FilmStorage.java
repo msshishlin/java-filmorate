@@ -5,6 +5,7 @@ package ru.yandex.practicum.filmorate.storage.abstractions;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
+import java.util.Optional;
 
 // endregion
 
@@ -28,6 +29,14 @@ public interface FilmStorage {
     Collection<Film> getAll();
 
     /**
+     * Получить фильм по его идентификатору.
+     *
+     * @param filmId идентификатор фильма.
+     * @return фильм.
+     */
+    Optional<Film> getFilmById(long filmId);
+
+    /**
      * Обновить фильм.
      *
      * @param film фильм.
@@ -40,18 +49,16 @@ public interface FilmStorage {
      *
      * @param filmId идентификатор фильма.
      * @param userId идентификатор пользователя.
-     * @return фильм.
      */
-    Film addLike(Long filmId, Long userId);
+    void addLike(Long filmId, Long userId);
 
     /**
      * Удалить у фильма пользовательский лайк.
      *
      * @param filmId идентификатор фильма.
      * @param userId идентификатор пользователя.
-     * @return фильм.
      */
-    Film removeLike(Long filmId, Long userId);
+    void removeLike(Long filmId, Long userId);
 
     /**
      * Получить {@code count} популярных фильмов.
