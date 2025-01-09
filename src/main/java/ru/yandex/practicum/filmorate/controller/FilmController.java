@@ -3,12 +3,14 @@ package ru.yandex.practicum.filmorate.controller;
 // region imports
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
 import ru.yandex.practicum.filmorate.exception.MissedEntityIdException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
@@ -24,30 +26,24 @@ public class FilmController {
     /**
      * Сервис для работы с фильмами.
      */
-    private final FilmService filmService;
-
-    /**
-     * Конструктор.
-     */
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
+    @Autowired
+    private FilmService filmService;
 
     /**
      * Создать фильм.
      *
-     * @param film   фильм.
-     * @param result результат привязки тела запроса к полям модели.
+     * @param filmDto трансферный объект для сущности "Фильм".
+     * @param result  результат привязки тела запроса к полям модели.
      * @return созданный фильм.
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Film create(@RequestBody @Valid Film film, BindingResult result) {
+    public FilmDto create(@RequestBody @Valid FilmDto filmDto, BindingResult result) {
         if (result.hasErrors()) {
             throw new ValidationException(result.getAllErrors());
         }
 
-        return this.filmService.create(film);
+        return FilmMapper.mapToFilmDto(this.filmService.create(FilmMapper.mapToFilm(filmDto)));
     }
 
     /**
@@ -56,28 +52,39 @@ public class FilmController {
      * @return коллекция фильмов.
      */
     @GetMapping
-    public Collection<Film> getAll() {
-        return this.filmService.getAll();
+    public Collection<FilmDto> getAll() {
+        return FilmMapper.mapToFilmDtoCollection(this.filmService.getAll());
+    }
+
+    /**
+     * Получить фильм по его идентификатору.
+     *
+     * @param filmId идентификатор фильма.
+     * @return фильм.
+     */
+    @GetMapping("/{filmId}")
+    public FilmDto getFilmById(@PathVariable long filmId) {
+        return FilmMapper.mapToFilmDto(this.filmService.getFilmById(filmId));
     }
 
     /**
      * Обновить фильм.
      *
-     * @param film   фильм.
-     * @param result результат привязки тела запроса к полям модели.
+     * @param filmDto фильм.
+     * @param result  результат привязки тела запроса к полям модели.
      * @return обновленный фильм.
      */
     @PutMapping
-    public Film update(@RequestBody @Valid Film film, BindingResult result) {
+    public FilmDto update(@RequestBody @Valid FilmDto filmDto, BindingResult result) {
         if (result.hasErrors()) {
             throw new ValidationException(result.getAllErrors());
         }
 
-        if (film.getId() == null) {
+        if (filmDto.getId() == null) {
             throw new MissedEntityIdException("Не задан идентификатор фильма");
         }
 
-        return this.filmService.update(film);
+        return FilmMapper.mapToFilmDto(this.filmService.update(FilmMapper.mapToFilm(filmDto)));
     }
 
     /**
@@ -85,11 +92,11 @@ public class FilmController {
      *
      * @param filmId идентификатор фильма.
      * @param userId идентификатор пользователя.
-     * @return фильм.
      */
     @PutMapping("/{filmId}/like/{userId}")
-    public Film addLike(@PathVariable Long filmId, @PathVariable Long userId) {
-        return this.filmService.addLike(filmId, userId);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addLike(@PathVariable Long filmId, @PathVariable Long userId) {
+        this.filmService.addLike(filmId, userId);
     }
 
     /**
@@ -97,11 +104,11 @@ public class FilmController {
      *
      * @param filmId идентификатор фильма.
      * @param userId идентификатор пользователя.
-     * @return фильм.
      */
     @DeleteMapping("/{filmId}/like/{userId}")
-    public Film removeLike(@PathVariable Long filmId, @PathVariable Long userId) {
-        return this.filmService.removeLike(filmId, userId);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeLike(@PathVariable Long filmId, @PathVariable Long userId) {
+        this.filmService.removeLike(filmId, userId);
     }
 
     /**
@@ -111,7 +118,7 @@ public class FilmController {
      * @return {@code count} популярных фильмов.
      */
     @GetMapping("/popular")
-    public Collection<Film> getPopularFilms(@RequestParam(defaultValue = "10") Long count) {
-        return this.filmService.getPopularFilms(count);
+    public Collection<FilmDto> getPopularFilms(@RequestParam(defaultValue = "10") Long count) {
+        return FilmMapper.mapToFilmDtoCollection(this.filmService.getPopularFilms(count));
     }
 }

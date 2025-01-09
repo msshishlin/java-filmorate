@@ -38,6 +38,8 @@ public class InMemoryUserStorage implements UserStorage {
      */
     @Override
     public User create(User user) {
+        user.setId(this.getNextId());
+
         this.users.put(user.getId(), user);
         return user;
     }
@@ -93,10 +95,9 @@ public class InMemoryUserStorage implements UserStorage {
      *
      * @param userId   идентификатор пользователя.
      * @param friendId идентификатор друга.
-     * @return пользователь.
      */
     @Override
-    public User addFriend(Long userId, Long friendId) {
+    public void addFriend(Long userId, Long friendId) {
         User user = this.users.get(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователь с идентификатором %d не найден", userId));
@@ -109,8 +110,6 @@ public class InMemoryUserStorage implements UserStorage {
 
         user.getFriends().add(friendId);
         friend.getFriends().add(userId);
-
-        return user;
     }
 
     /**
@@ -167,10 +166,9 @@ public class InMemoryUserStorage implements UserStorage {
      *
      * @param userId   идентификатор пользователя.
      * @param friendId идентификатор друга.
-     * @return пользователь.
      */
     @Override
-    public User removeFriend(Long userId, Long friendId) {
+    public void removeFriend(Long userId, Long friendId) {
         User user = this.users.get(userId);
         if (user == null) {
             throw new NotFoundException(String.format("Пользователь с идентификатором %d не найден", userId));
@@ -183,7 +181,24 @@ public class InMemoryUserStorage implements UserStorage {
 
         user.getFriends().remove(friendId);
         friend.getFriends().remove(userId);
-
-        return user;
     }
+
+    // region Facilities
+
+    /**
+     * Получить идентификатор для создания нового пользователя.
+     *
+     * @return идентификатор для создания нового пользователя.
+     */
+    private long getNextId() {
+        long currentMaxId = this.users.values()
+                .stream()
+                .mapToLong(User::getId)
+                .max()
+                .orElse(0);
+
+        return ++currentMaxId;
+    }
+
+    // endregion
 }

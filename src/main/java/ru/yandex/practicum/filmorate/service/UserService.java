@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
-// region imports
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 import ru.yandex.practicum.filmorate.storage.abstractions.UserStorage;
 
 import java.util.Collection;
-
-// endregion
 
 /**
  * Сервис для работы с пользователями.
@@ -18,16 +17,9 @@ public class UserService {
     /**
      * Хранилище пользователей.
      */
-    private final UserStorage userStorage;
-
-    /**
-     * Конструктор.
-     *
-     * @param userStorage хранилище пользователей.
-     */
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
+    @Autowired
+    @Qualifier(UserDbStorage.CLASS_NAME)
+    private UserStorage userStorage;
 
     /**
      * Создать пользователя.
@@ -40,7 +32,6 @@ public class UserService {
             user.setName(user.getLogin());
         }
 
-        user.setId(this.getNextId());
         return this.userStorage.create(user);
     }
 
@@ -68,10 +59,9 @@ public class UserService {
      *
      * @param userId   идентификатор пользователя.
      * @param friendId идентификатор друга.
-     * @return пользователь.
      */
-    public User addFriend(Long userId, Long friendId) {
-        return this.userStorage.addFriend(userId, friendId);
+    public void addFriend(Long userId, Long friendId) {
+        this.userStorage.addFriend(userId, friendId);
     }
 
     /**
@@ -100,28 +90,8 @@ public class UserService {
      *
      * @param userId   идентификатор пользователя.
      * @param friendId идентификатор друга.
-     * @return пользователь.
      */
-    public User removeFriend(Long userId, Long friendId) {
-        return this.userStorage.removeFriend(userId, friendId);
+    public void removeFriend(Long userId, Long friendId) {
+        this.userStorage.removeFriend(userId, friendId);
     }
-
-    // region Facilities
-
-    /**
-     * Получить идентификатор для создания нового пользователя.
-     *
-     * @return идентификатор для создания нового пользователя.
-     */
-    private long getNextId() {
-        long currentMaxId = this.userStorage.getAll()
-                .stream()
-                .mapToLong(User::getId)
-                .max()
-                .orElse(0);
-
-        return ++currentMaxId;
-    }
-
-    // endregion
 }
